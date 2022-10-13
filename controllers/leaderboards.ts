@@ -1,4 +1,5 @@
 import { NextFunction, Request, RequestHandler, Response } from 'express';
+import { ErrorHandler } from '../helpers/errors';
 import ILeaderboard from '../interfaces/ILeaderboard';
 import Leaderboard from '../models/leaderboard';
 
@@ -42,4 +43,53 @@ const addScore = (async (req: Request, res: Response, next: NextFunction) => {
   }
 }) as RequestHandler;
 
-export default { getAllLeaderboard, getOneScore, addScore };
+// PUT score
+const updateScore = (async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { idScore } = req.params;
+    const scoreUpdated = await Leaderboard.updateScore(
+      Number(idScore),
+      req.body as ILeaderboard
+    );
+    if (scoreUpdated) {
+      const score = await Leaderboard.getOneScore(Number(idScore));
+      res.status(200).json(score);
+    } else {
+      throw new ErrorHandler(500, 'Score cannot be updated');
+    }
+  } catch (err) {
+    next(err);
+  }
+}) as RequestHandler;
+
+// DELETE score
+const deleteScore = (async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { idScore } = req.params;
+    const score = await Leaderboard.getOneScore(Number(idScore));
+    const scoreDeleted = await Leaderboard.deleteScore(Number(idScore));
+    if (scoreDeleted) {
+      res.status(200).json(score);
+    } else {
+      throw new ErrorHandler(500, 'Score cannot be deleted');
+    }
+  } catch (err) {
+    next(err);
+  }
+}) as RequestHandler;
+
+export default {
+  getAllLeaderboard,
+  getOneScore,
+  addScore,
+  updateScore,
+  deleteScore,
+};

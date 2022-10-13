@@ -29,4 +29,50 @@ const addScore = async (newScore: ILeaderboard): Promise<number> => {
   return results[0].insertId;
 };
 
-export default { getAllLeaderboard, getOneScore, addScore };
+// PUT score
+const updateScore = async (
+  idScore: number,
+  score: ILeaderboard
+): Promise<boolean> => {
+  let sql = 'UPDATE leaderboard SET ';
+  const sqlValues: Array<string | number> = [];
+  let oneValue = false;
+  if (score.username) {
+    sql += 'username = ?';
+    sqlValues.push(score.username);
+    oneValue = true;
+  }
+  if (score.avatar) {
+    sql += oneValue ? ' , avatar = ? ' : ' avatar = ? ';
+    sqlValues.push(score.avatar);
+    oneValue = true;
+  }
+  if (score.score) {
+    sql += oneValue ? ' , score = ? ' : ' score = ? ';
+    sqlValues.push(score.score);
+    oneValue = true;
+  }
+  sql += ' WHERE id = ?';
+  sqlValues.push(idScore);
+
+  const results = await connection
+    .promise()
+    .query<ResultSetHeader>(sql, sqlValues);
+  return results[0].affectedRows === 1;
+};
+
+// DELETE score
+const deleteScore = async (idScore: number): Promise<boolean> => {
+  const results = await connection
+    .promise()
+    .query<ResultSetHeader>('DELETE FROM leaderboard WHERE id = ?', [idScore]);
+  return results[0].affectedRows === 1;
+};
+
+export default {
+  getAllLeaderboard,
+  getOneScore,
+  addScore,
+  updateScore,
+  deleteScore,
+};

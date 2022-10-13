@@ -15,6 +15,10 @@ const setupRoutes = (server: Express) => {
   server.get('/api/leaderboard/:idScore', leaderboardController.getOneScore);
   // POST score
   server.post('/api/leaderboard', leaderboardController.addScore);
+  // PUT score
+  server.put('/api/leaderboard/:idScore', leaderboardController.updateScore);
+  // DELETE score
+  server.delete('/api/leaderboard/:idScore', leaderboardController.deleteScore);
 };
 
 export default setupRoutes;
