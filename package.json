@@ -6,6 +6,7 @@
   "author": "",
   "license": "ISC",
   "scripts": {
+    "build": "npm install && tsc",
     "dev": "nodemon index.js",
     "start": "node index.js",
     "ts": "tsc -w",
