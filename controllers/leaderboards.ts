@@ -51,13 +51,16 @@ const updateScore = (async (
 ) => {
   try {
     const { idScore } = req.params;
+    const currentScore = await Leaderboard.getOneScore(Number(idScore));
     const scoreUpdated = await Leaderboard.updateScore(
+      //boolean
       Number(idScore),
-      req.body as ILeaderboard
+      req.body as ILeaderboard,
+      currentScore as ILeaderboard
     );
     if (scoreUpdated) {
-      const score = await Leaderboard.getOneScore(Number(idScore));
-      res.status(200).json(score);
+      const newScore = await Leaderboard.getOneScore(Number(idScore));
+      res.status(200).json(newScore);
     } else {
       throw new ErrorHandler(500, 'Score cannot be updated');
     }
